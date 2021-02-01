@@ -51,10 +51,34 @@ class ProjectInput {
         this.attach();
     }
 
+    private gatherUserInput(): [string, string, number] | void {
+        const title = this.titleInputElement.value;
+        const description = this.descriptionInputElement.value;
+        const people = this.peopleInputElement.value;
+
+        if (title.trim().length === 0 || description.trim().length === 0 || people.trim().length === 0) {
+            alert('Invalid input try again!')
+        } else {
+            return [title, description, +people];
+        }
+    }
+
+    private clearInputs() {
+        this.titleInputElement.value = '';
+        this.descriptionInputElement.value = '';
+        this.peopleInputElement.value = '';
+    }
+
     @Bind
     private submitHandler(event: Event) {
         event.preventDefault();
-        console.log(this.titleInputElement.value);
+        const userInput = this.gatherUserInput();
+
+        if(Array.isArray(userInput)) {
+            const [title, description, people] = userInput;
+            console.log(title, description, people);
+            this.clearInputs();
+        }
     }
 
     private configure() {
