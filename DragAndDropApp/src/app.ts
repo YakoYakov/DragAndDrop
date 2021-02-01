@@ -1,3 +1,20 @@
+// AutoBind decorator
+
+function Bind(_: any, _2: string | symbol, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  const fixedBindingMethod: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const boundFunction = originalMethod.bind(this);
+      return boundFunction;
+    },
+  };
+  return fixedBindingMethod;
+}
+
+// Project input class
+
 class ProjectInput {
     templateElement: HTMLTemplateElement;
     hostElement: HTMLDivElement;
@@ -34,13 +51,14 @@ class ProjectInput {
         this.attach();
     }
 
+    @Bind
     private submitHandler(event: Event) {
         event.preventDefault();
         console.log(this.titleInputElement.value);
     }
 
     private configure() {
-        this.elementToAttach.addEventListener('submit', this.submitHandler.bind(this));
+        this.elementToAttach.addEventListener('submit', this.submitHandler);
     }
 
     private attach() {
