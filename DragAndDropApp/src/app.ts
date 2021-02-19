@@ -1,3 +1,15 @@
+// Drag & Drop Interfaces
+interface Draggable {
+  dragStartHandler(event: DragEvent): void;
+  dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {
+  dragOverHandler(event: DragEvent): void;
+  dropHandler(event: DragEvent): void;
+  dragLeaveHandler(event: DragEvent): void;
+}
+
 // Project Type
 enum ProjectStatus {
   Active,
@@ -30,7 +42,7 @@ class ProjectState extends State<Project> {
   private static instance: ProjectState;
 
   private constructor() {
-      super();
+    super();
   }
 
   static getInstance() {
@@ -164,14 +176,18 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
 
 // ProjectItem class
 
-class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+class ProjectItem
+  extends Component<HTMLUListElement, HTMLLIElement>
+  implements Draggable {
   private project: Project;
 
   get persons() {
-    return this.project.people === 1 ? '1 person' : `${this.project.people} persons`;
+    return this.project.people === 1
+      ? '1 person'
+      : `${this.project.people} persons`;
   }
-  
-  constructor (hostId: string, project: Project) {
+
+  constructor(hostId: string, project: Project) {
     super('single-project', hostId, false, project.id);
     this.project = project;
 
@@ -179,14 +195,28 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
     this.renderContent();
   }
 
+  @Bind
+  dragStartHandler(event: DragEvent): void {
+    console.log('DragStart', event);
+  }
+
+  @Bind
+  dragEndHandler(_: DragEvent): void {
+    console.log('DragEnd');
+  }
+
   configure(): void {
-    
+    this.elementToAttach.addEventListener('dragstart', this.dragStartHandler);
+    this.elementToAttach.addEventListener('dragend', this.dragEndHandler);
   }
 
   renderContent(): void {
     this.elementToAttach.querySelector('h2')!.textContent = this.project.title;
-    this.elementToAttach.querySelector('h3')!.textContent = this.persons + ' assigned';
-    this.elementToAttach.querySelector('p')!.textContent = this.project.description;
+    this.elementToAttach.querySelector('h3')!.textContent =
+      this.persons + ' assigned';
+    this.elementToAttach.querySelector(
+      'p'
+    )!.textContent = this.project.description;
   }
 }
 
